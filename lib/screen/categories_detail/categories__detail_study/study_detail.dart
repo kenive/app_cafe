@@ -26,10 +26,12 @@ class StudyDetail extends StatefulWidget {
 class _StudyDetailState extends State<StudyDetail>
     with AutomaticKeepAliveClientMixin {
   late StudyLogic study;
+  late ScrollController controller;
 
   @override
   void initState() {
     study = StudyLogic(context: context);
+    controller = ScrollController();
 
     super.initState();
   }
@@ -41,7 +43,7 @@ class _StudyDetailState extends State<StudyDetail>
     return ChangeNotifierProvider.value(
       value: study,
       child: Scaffold(
-        drawer: DrawerBegin(detailData: study.listH2conTent),
+        drawer: const DrawerBegin(),
         endDrawer: DrawerWidget(
           detailData: study.dataCategories,
         ),
@@ -68,7 +70,7 @@ class _StudyDetailState extends State<StudyDetail>
                         study.data1.tieu_de,
                         style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 23,
+                            fontSize: 21,
                             fontWeight: FontWeight.bold),
                       ),
                     );
@@ -92,6 +94,7 @@ class _StudyDetailState extends State<StudyDetail>
                           child: FooterLoading(isLoading: true));
                     }
                     return SingleChildScrollView(
+                        controller: controller,
                         physics: const BouncingScrollPhysics(),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -105,7 +108,7 @@ class _StudyDetailState extends State<StudyDetail>
                                     'figure': Style(
                                       width: 400,
                                       height: 200,
-                                    )
+                                    ),
                                   },
                                 );
                               },
@@ -296,6 +299,7 @@ class _StudyDetailState extends State<StudyDetail>
                       return ElevatedButton(
                         onPressed: () {
                           Scaffold.of(context).openDrawer();
+                          //controller.jumpTo(1000);
                         },
                         child: const Text('Mục lục'),
                         style: ElevatedButton.styleFrom(

@@ -36,6 +36,7 @@ class StudyLogic extends ChangeNotifier {
       hinh_anh: '',
       noi_dung: '',
       nguoi_dang: 1);
+
   List<String> listH2conTent = [];
 
   void getIdStudy(int id) async {
@@ -52,10 +53,11 @@ class StudyLogic extends ChangeNotifier {
       document.getElementsByTagName('h2').forEach((element) {
         listH2conTent.add(element.innerHtml);
       });
-
       if (listH2conTent.isEmpty) {
         checkMucLuc = false;
       }
+
+      notifyListeners();
 
       var comment = await cafe.getComment(id);
       dataComment = comment.data!;
@@ -74,6 +76,18 @@ class StudyLogic extends ChangeNotifier {
       var data = await cafe.getIdStudy(id);
       stt = id;
       data1 = data.data!;
+      var document = parse(data1.noi_dung);
+      listH2conTent = [];
+
+      document.getElementsByTagName('h2').forEach((element) {
+        listH2conTent.add(element.innerHtml);
+      });
+
+      if (listH2conTent.isEmpty) {
+        checkMucLuc = false;
+      } else {
+        checkMucLuc = true;
+      }
 
       notifyListeners();
     } catch (e) {
