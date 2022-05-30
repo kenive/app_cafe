@@ -126,7 +126,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                         borderRadius: BorderRadius.circular(8),
                                         child: SizedBox(
                                           height: 70,
-                                          width: 130,
+                                          width: 90,
                                           child: Image.network(
                                             Constant.url +
                                                 value[index].hinh_anh,
@@ -138,13 +138,14 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 12, right: 12),
+                                            left: 12, right: 30),
                                         child: Text(
                                           value[index].tieu_de,
                                           style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 17,
-                                              fontWeight: FontWeight.bold),
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.5),
                                         ),
                                       ),
                                     ),
