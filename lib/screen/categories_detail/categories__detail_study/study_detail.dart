@@ -13,7 +13,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:html/parser.dart' show parse;
 part 'study_detail_logic.dart';
 
 class StudyDetail extends StatefulWidget {

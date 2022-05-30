@@ -91,6 +91,7 @@ class StudyLogic extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
+      dataComment = [];
       debugPrint('$e');
     }
   }
