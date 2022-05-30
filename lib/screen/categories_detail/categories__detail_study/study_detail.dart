@@ -7,9 +7,8 @@ import 'package:app_cafe/services/apis/cafe_api.dart';
 import 'package:app_cafe/widget/drawer_widget.dart';
 import 'package:app_cafe/widget/drawer_wiget_begin.dart';
 import 'package:app_cafe/widget/footer_loading/footer_loading.dart';
-
 import 'package:flutter/material.dart';
-
+import 'package:html/parser.dart' show parse;
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

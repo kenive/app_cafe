@@ -161,7 +161,6 @@ class StudyLogic extends ChangeNotifier {
 
   void addComment() async {
     try {
-      clearAllTextField();
       CommentData data = await cafe.addComment(
         id,
         txtContent.text,
@@ -169,8 +168,11 @@ class StudyLogic extends ChangeNotifier {
         txtPhone.text,
         txtName.text,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bình luận đang chờ duyệt!')));
+      if (data.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bình luận đang chờ duyệt!')));
+      }
+      clearAllTextField();
     } catch (e) {
       debugPrint(e.toString());
     }
