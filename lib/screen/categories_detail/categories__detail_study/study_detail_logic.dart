@@ -17,8 +17,8 @@ class StudyLogic extends ChangeNotifier {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtContent = TextEditingController();
   bool enable = true;
-  String errorName = '';
-  String errorContent = '';
+  String errorName = 'error';
+  String errorContent = 'error';
 
   double size = 21;
 
