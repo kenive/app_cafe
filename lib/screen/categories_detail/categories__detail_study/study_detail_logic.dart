@@ -21,11 +21,13 @@ class StudyLogic extends ChangeNotifier {
   String errorContent = 'error';
 
   double size = 21;
+  bool checkMucLuc = true;
 
   List<CategoryDetailData> dataCategories = [];
   List<CommentAdmin> dataComment = [];
 
   int stt = 0;
+
   CategoryDetailData data1 = CategoryDetailData(
       id: 1,
       danh_muc_id: 1,
@@ -34,6 +36,7 @@ class StudyLogic extends ChangeNotifier {
       hinh_anh: '',
       noi_dung: '',
       nguoi_dang: 1);
+  List<String> listH2conTent = [];
 
   void getIdStudy(int id) async {
     try {
@@ -43,6 +46,16 @@ class StudyLogic extends ChangeNotifier {
       var categories = await cafe.getIdCategories(data1.danh_muc_id);
 
       dataCategories = categories.data;
+
+      var document = parse(data1.noi_dung);
+
+      document.getElementsByTagName('h2').forEach((element) {
+        listH2conTent.add(element.innerHtml);
+      });
+
+      if (listH2conTent.isEmpty) {
+        checkMucLuc = false;
+      }
 
       var comment = await cafe.getComment(id);
       dataComment = comment.data!;
@@ -117,51 +130,6 @@ class StudyLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _phoneNumberValidator(String value) {
-    String pattern = r'((^(\+84|84|0|0084){1})(3|5|7|8|9))+([0-9]{8})$';
-    RegExp regex = RegExp(pattern);
-    if (value.isEmpty) {
-      return false;
-    }
-    if (!regex.hasMatch(value)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  bool _emailValidator(String value) {
-    final RegExp PATTERN_EMAIL_FIRST = RegExp(r'^[a-zA-Z0-9]\S+$');
-    final RegExp PATTERN_EMAIL =
-        RegExp(r'^[^\W][a-zA-Z0-9-_\.]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$');
-    final RegExp PATTERN_EMAIL_STRONG = RegExp(
-        r'^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
-
-    if (!PATTERN_EMAIL_FIRST.hasMatch(value)) {
-      return false;
-    }
-    if (!PATTERN_EMAIL.hasMatch(value)) {
-      return false;
-    }
-    if (!PATTERN_EMAIL_STRONG.hasMatch(value)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  void validatePhone() {
-    bool a = _phoneNumberValidator(txtPhone.text);
-    print(a);
-    notifyListeners();
-  }
-
-  void validateEmail() {
-    bool a = _emailValidator(txtEmail.text);
-    print(a);
-    notifyListeners();
-  }
-
   void setId(int value) {
     id = value;
     notifyListeners();
@@ -179,7 +147,6 @@ class StudyLogic extends ChangeNotifier {
       errorContent = '';
     }
     notifyListeners();
-    print(txtName.text);
   }
 
   void clearAllTextField() {

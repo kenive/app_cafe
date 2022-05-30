@@ -1,10 +1,11 @@
 import 'package:app_cafe/models/categories_detail/detail_data.dart';
 import 'package:app_cafe/models/comment/comment_admin.dart';
-import 'package:app_cafe/models/comment/comment_response.dart';
+
 import 'package:app_cafe/models/commentData/comment_data.dart';
-import 'package:app_cafe/screen/categories_detail/categories_detail.dart';
+
 import 'package:app_cafe/services/apis/cafe_api.dart';
 import 'package:app_cafe/widget/drawer_widget.dart';
+import 'package:app_cafe/widget/drawer_wiget_begin.dart';
 import 'package:app_cafe/widget/footer_loading/footer_loading.dart';
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:html/parser.dart' show parse;
 part 'study_detail_logic.dart';
 
 class StudyDetail extends StatefulWidget {
@@ -40,9 +42,7 @@ class _StudyDetailState extends State<StudyDetail>
     return ChangeNotifierProvider.value(
       value: study,
       child: Scaffold(
-        drawer: DrawerWidget(
-          detailData: study.dataCategories,
-        ),
+        drawer: DrawerBegin(detailData: study.listH2conTent),
         endDrawer: DrawerWidget(
           detailData: study.dataCategories,
         ),
@@ -290,14 +290,22 @@ class _StudyDetailState extends State<StudyDetail>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
+                Selector<StudyLogic, bool>(
+                  selector: (_, state) => state.checkMucLuc,
+                  builder: (_, value, __) {
+                    if (value) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        child: const Text('Mục lục'),
+                        style: ElevatedButton.styleFrom(
+                          primary: const Color.fromARGB(255, 4, 63, 111),
+                        ),
+                      );
+                    }
+                    return const SizedBox();
                   },
-                  child: const Text('Mục lục'),
-                  style: ElevatedButton.styleFrom(
-                    primary: const Color.fromARGB(255, 4, 63, 111),
-                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
