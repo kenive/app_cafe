@@ -1,5 +1,7 @@
 import 'package:app_cafe/models/categories_detail/detail_data.dart';
 import 'package:app_cafe/models/comment/comment_admin.dart';
+import 'package:app_cafe/models/comment/comment_response.dart';
+import 'package:app_cafe/models/commentData/comment_data.dart';
 import 'package:app_cafe/screen/categories_detail/categories_detail.dart';
 import 'package:app_cafe/services/apis/cafe_api.dart';
 import 'package:app_cafe/widget/drawer_widget.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 part 'study_detail_logic.dart';
 
 class StudyDetail extends StatefulWidget {
@@ -37,11 +40,12 @@ class _StudyDetailState extends State<StudyDetail>
     return ChangeNotifierProvider.value(
       value: study,
       child: Scaffold(
-        //drawer: const DrawerWidget(),
+        drawer: DrawerWidget(
+          detailData: study.dataCategories,
+        ),
         endDrawer: DrawerWidget(
           detailData: study.dataCategories,
         ),
-
         body: Column(
           children: [
             Container(
@@ -300,170 +304,239 @@ class _StudyDetailState extends State<StudyDetail>
                     showDialog(
                         context: context,
                         builder: (context) {
-                          return GestureDetector(
-                            onTap: () {
-                              FocusScope.of(context).unfocus();
-                            },
-                            child: AlertDialog(
-                              insetPadding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8))),
-                              backgroundColor: Colors.white,
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text('Góp ý, đặt câu hỏi',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                          fontSize: 20)),
-                                  IconButton(
-                                    icon: const Icon(Icons.close,
-                                        color: Colors.black),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                  ),
-                                ],
-                              ),
-                              content: SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: MediaQuery.of(context).size.width,
-                                  child: Column(
+                          return ChangeNotifierProvider.value(
+                            value: study,
+                            builder: (_, value) {
+                              return GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context).unfocus();
+                                },
+                                child: AlertDialog(
+                                  insetPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  backgroundColor: Colors.white,
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      TextField(
-                                        controller: study.txtName,
-                                        keyboardType: TextInputType.text,
-                                        decoration: InputDecoration(
-                                          iconColor: Colors.green,
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.green, width: 2),
-                                          ),
-                                          prefixIcon: const Icon(
-                                            Icons.person,
-                                          ),
-                                          labelText: 'Họ và tên',
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
+                                      const Text('Góp ý, đặt câu hỏi',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                              fontSize: 20)),
+                                      IconButton(
+                                        icon: const Icon(Icons.close,
+                                            color: Colors.black),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
                                       ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      TextFormField(
-                                        controller: study.txtEmail,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        decoration: InputDecoration(
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.green, width: 2),
-                                          ),
-                                          prefixIcon: const Icon(
-                                            Icons.email,
-                                          ),
-                                          labelText: 'Nhập Email',
-                                          border: OutlineInputBorder(
-                                            borderSide: const BorderSide(
-                                                color: Colors.red),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        onChanged: (value) {
-                                          //study.validateEmail();
-                                        },
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      TextFormField(
-                                        controller: study.txtPhone,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.green, width: 2),
-                                          ),
-                                          prefixIcon: const Icon(Icons.call),
-                                          labelText: 'Nhập số điện thoại',
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        onChanged: (value) {
-                                          //study.validatePhone();
-                                        },
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      TextFormField(
-                                        textAlign: TextAlign.left,
-                                        keyboardType: TextInputType.text,
-                                        textAlignVertical:
-                                            TextAlignVertical.top,
-                                        decoration: InputDecoration(
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.green, width: 2),
-                                          ),
-                                          contentPadding: EdgeInsets.all(10),
-                                          hintText: 'Nhập Nội dung',
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        maxLines: 4,
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                          child: Row(
-                                            children: const [
-                                              SizedBox(
-                                                width: 15,
-                                              ),
-                                              Icon(Icons.send,
-                                                  color: Colors.white),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 120),
-                                                child: Text('GỬI'),
-                                              )
-                                            ],
-                                          ),
-                                          onPressed: () {},
-                                          style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10),
-                                            primary: Colors.green,
-                                          ),
-                                        ),
-                                      )
                                     ],
-                                  )),
-                            ),
+                                  ),
+                                  content: Selector<StudyLogic,
+                                      Tuple2<String, String>>(
+                                    selector: (_, state) => Tuple2(
+                                        state.errorName, state.errorContent),
+                                    builder: (_, value, __) {
+                                      return SizedBox(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height:
+                                              MediaQuery.of(context).size.width,
+                                          child: Column(
+                                            children: [
+                                              TextField(
+                                                onChanged: (value) {
+                                                  study.validateAddComment();
+                                                },
+                                                controller: study.txtName,
+                                                keyboardType:
+                                                    TextInputType.text,
+                                                decoration: InputDecoration(
+                                                  iconColor: Colors.green,
+                                                  focusedBorder: value
+                                                          .item1.isNotEmpty
+                                                      ? const OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  width: 2),
+                                                        )
+                                                      : const OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .green,
+                                                                  width: 2),
+                                                        ),
+                                                  prefixIcon: const Icon(
+                                                    Icons.person,
+                                                  ),
+                                                  labelText: 'Họ và tên',
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              TextFormField(
+                                                controller: study.txtEmail,
+                                                keyboardType:
+                                                    TextInputType.emailAddress,
+                                                decoration: InputDecoration(
+                                                  focusedBorder:
+                                                      const OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.green,
+                                                        width: 2),
+                                                  ),
+                                                  prefixIcon: const Icon(
+                                                    Icons.email,
+                                                  ),
+                                                  labelText: 'Nhập Email',
+                                                  border: OutlineInputBorder(
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: Colors.red),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                ),
+                                                onChanged: (value) {
+                                                  //study.validateEmail();
+                                                },
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              TextFormField(
+                                                controller: study.txtPhone,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                decoration: InputDecoration(
+                                                  focusedBorder:
+                                                      const OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.green,
+                                                        width: 2),
+                                                  ),
+                                                  prefixIcon:
+                                                      const Icon(Icons.call),
+                                                  labelText:
+                                                      'Nhập số điện thoại',
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                ),
+                                                onChanged: (value) {
+                                                  //study.validatePhone();
+                                                },
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              TextFormField(
+                                                onChanged: (value) {
+                                                  study.validateAddComment();
+                                                },
+                                                controller: study.txtContent,
+                                                textAlign: TextAlign.left,
+                                                keyboardType:
+                                                    TextInputType.text,
+                                                textAlignVertical:
+                                                    TextAlignVertical.top,
+                                                decoration: InputDecoration(
+                                                  focusedBorder: value
+                                                          .item2.isNotEmpty
+                                                      ? const OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  width: 2),
+                                                        )
+                                                      : const OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .green,
+                                                                  width: 2),
+                                                        ),
+                                                  contentPadding:
+                                                      EdgeInsets.all(10),
+                                                  hintText: 'Nhập Nội dung',
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                ),
+                                                maxLines: 4,
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  child: Row(
+                                                    children: const [
+                                                      SizedBox(
+                                                        width: 15,
+                                                      ),
+                                                      Icon(Icons.send,
+                                                          color: Colors.white),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 120),
+                                                        child: Text('GỬI'),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  onPressed: () {
+                                                    if (value.item1.isEmpty &&
+                                                        value.item2.isEmpty) {
+                                                      study.addComment();
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        vertical: 10),
+                                                    primary: value.item1
+                                                                .isEmpty &&
+                                                            value.item2.isEmpty
+                                                        ? Colors.green
+                                                        : Colors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ));
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         });
                   },
                   child: const Text('Góp ý'),
                   style: ElevatedButton.styleFrom(primary: Colors.purple),
-                )
+                ),
               ],
             ),
           );

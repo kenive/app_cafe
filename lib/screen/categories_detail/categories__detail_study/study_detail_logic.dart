@@ -3,11 +3,12 @@ part of 'study_detail.dart';
 class StudyLogic extends ChangeNotifier {
   late BuildContext context;
   final CafeService cafe = CafeService.client();
+  int id = 0;
   StudyLogic({required this.context}) {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       List id = ModalRoute.of(context)!.settings.arguments as List;
-
       getIdStudy(id[0]);
+      setId(id[0]);
     });
   }
 
@@ -16,6 +17,8 @@ class StudyLogic extends ChangeNotifier {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtContent = TextEditingController();
   bool enable = true;
+  String errorName = '';
+  String errorContent = '';
 
   double size = 21;
 
@@ -157,5 +160,52 @@ class StudyLogic extends ChangeNotifier {
     bool a = _emailValidator(txtEmail.text);
     print(a);
     notifyListeners();
+  }
+
+  void setId(int value) {
+    id = value;
+    notifyListeners();
+  }
+
+  void validateAddComment() {
+    if (txtName.text.trim().isEmpty) {
+      errorName = 'error';
+    } else if (txtName.text.trim().isNotEmpty) {
+      errorName = '';
+    }
+    if (txtContent.text.trim().isEmpty) {
+      errorContent = 'error';
+    } else if (txtContent.text.trim().isNotEmpty) {
+      errorContent = '';
+    }
+    notifyListeners();
+    print(txtName.text);
+  }
+
+  void clearAllTextField() {
+    txtContent.clear();
+    txtEmail.clear();
+    txtName.clear();
+    txtPhone.clear();
+    errorContent = 'error';
+    errorName = 'error';
+    notifyListeners();
+  }
+
+  void addComment() async {
+    try {
+      clearAllTextField();
+      CommentData data = await cafe.addComment(
+        id,
+        txtContent.text,
+        txtEmail.text,
+        txtPhone.text,
+        txtName.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bình luận đang chờ duyệt!')));
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }
