@@ -46,6 +46,8 @@ dependencies:
   tuple: ^2.0.0
   intl: ^0.17.0
   http: ^0.13.4
+  webview_flutter: ^2.8.0
+  flutter_inappwebview: ^5.4.3+6
 
 dev_dependencies:
   flutter_test:

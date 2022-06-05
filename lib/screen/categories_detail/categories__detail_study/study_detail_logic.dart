@@ -16,11 +16,15 @@ class StudyLogic extends ChangeNotifier {
   TextEditingController txtName = TextEditingController();
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtContent = TextEditingController();
+
+  final Completer<WebViewController> controller =
+      Completer<WebViewController>();
+
   bool enable = true;
   String errorName = 'error';
   String errorContent = 'error';
 
-  double size = 21;
+  int size = 36;
   bool checkMucLuc = true;
 
   List<CategoryDetailData> dataCategories = [];
@@ -38,6 +42,49 @@ class StudyLogic extends ChangeNotifier {
       nguoi_dang: 1);
 
   List<String> listH2conTent = [];
+  double height = 100;
+
+  Future<void> onPageFinished(
+      BuildContext context, Completer<WebViewController> _controller) async {
+    WebViewController controller = await _controller.future;
+    height = double.parse(await controller
+        // ignore: deprecated_member_use
+        .evaluateJavascript("document.documentElement.scrollHeight;"));
+    print(height);
+
+    notifyListeners();
+  }
+
+  Future<void> loadHtmlString(
+      Completer<WebViewController> controller1, BuildContext context) async {
+    WebViewController controller = await controller1.future;
+
+    try {
+      await controller.loadHtmlString(content(data1.noi_dung, size));
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('$e');
+    }
+  }
+
+  String content(String a, int size) => '''
+     <!DOCTYPE html>
+     <html lang="en">
+     <head>
+     <style>
+
+body {
+  font-size: ${size}px;
+}
+</style>
+   
+     </head>
+     <body>
+     $a
+    </body>
+    </html>
+    ''';
 
   void getIdStudy(int id) async {
     try {
@@ -50,14 +97,14 @@ class StudyLogic extends ChangeNotifier {
 
       var document = parse(data1.noi_dung);
 
+      //onPageFinished(context, controller);
+
       document.getElementsByTagName('h2').forEach((element) {
         listH2conTent.add(element.innerHtml);
       });
       if (listH2conTent.isEmpty) {
         checkMucLuc = false;
       }
-
-      notifyListeners();
 
       var comment = await cafe.getComment(id);
       dataComment = comment.data!;
@@ -82,12 +129,17 @@ class StudyLogic extends ChangeNotifier {
       document.getElementsByTagName('h2').forEach((element) {
         listH2conTent.add(element.innerHtml);
       });
+      size = 36;
+      notifyListeners();
+      loadHtmlString(controller, context);
 
       if (listH2conTent.isEmpty) {
         checkMucLuc = false;
       } else {
         checkMucLuc = true;
       }
+      var comment = await cafe.getComment(id);
+      dataComment = comment.data!;
 
       notifyListeners();
     } catch (e) {
@@ -99,20 +151,22 @@ class StudyLogic extends ChangeNotifier {
   void tang() {
     try {
       if (enable) {
-        if (size == 30) {
+        if (size == 60) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Đã đạt độ phóng to nhất'),
           ));
           enable = false;
           notifyListeners();
         } else {
+          loadHtmlString(controller, context);
           size += 1;
           notifyListeners();
         }
       }
-      if (size == 10) {
+      if (size == 20) {
         enable = true;
         size += 1;
+        loadHtmlString(controller, context);
         notifyListeners();
       }
     } catch (e) {
@@ -123,19 +177,21 @@ class StudyLogic extends ChangeNotifier {
   void giam() {
     try {
       if (enable) {
-        if (size == 10) {
+        if (size == 20) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Đã đạt độ thu nhỏ thấp nhất')));
           enable = false;
           notifyListeners();
         } else {
           size -= 1;
+          loadHtmlString(controller, context);
           notifyListeners();
         }
       }
-      if (size == 30) {
+      if (size == 60) {
         enable = true;
         size -= 1;
+        loadHtmlString(controller, context);
         notifyListeners();
       }
     } catch (e) {

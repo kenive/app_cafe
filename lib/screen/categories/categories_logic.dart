@@ -6,8 +6,8 @@ class CategoriesLogic extends ChangeNotifier {
 
   CategoriesLogic({required this.context}) {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      getCategories();
       getCauHinh();
+      getCategories();
     });
   }
   List<CategoriesData> data = [];
