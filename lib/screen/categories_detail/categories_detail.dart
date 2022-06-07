@@ -4,7 +4,9 @@ import 'package:app_cafe/services/contants/url.dart';
 import 'package:app_cafe/widget/footer_loading/footer_loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 part 'catogories_detail_logic.dart';
 
 class CategoriesDetail extends StatefulWidget {
@@ -62,41 +64,38 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                 onRefresh: () async {},
                 backgroundColor: Colors.white,
                 color: Colors.green,
-                child:
-                    Selector<CategoriesDetailLogic, List<CategoryDetailData>>(
-                  selector: (_, state) => state.data,
+                child: Selector<CategoriesDetailLogic,
+                    Tuple2<List<CategoryDetailData>, bool>>(
+                  selector: (_, state) => Tuple2(state.data, state.check),
                   builder: (context, value, child) {
-                    if (value.isEmpty) {
+                    if (value.item1.isEmpty) {
                       return const Center(
                           child: FooterLoading(
                         isLoading: true,
                       ));
                     }
+
                     return MediaQuery.removePadding(
                       context: context,
                       removeTop: true,
                       child: ListView.builder(
                         physics: const BouncingScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: value.length + 1,
+                        itemCount: value.item1.length + 1,
                         //physics: const BouncingScrollPhysics(),
                         itemBuilder: ((context, index) {
-                          if (index == value.length) {
+                          if (index == value.item1.length) {
                             return const SizedBox(
                               height: 30,
                             );
                           }
-                          if (value.isEmpty) {
-                            return const Center(
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 4));
-                          }
+
                           return InkWell(
                             onTap: () {
                               Navigator.pushNamed(context, 'study_detail',
                                   arguments: [
-                                    value[index].id,
-                                    value[index].tieu_de
+                                    value.item1[index].id,
+                                    value.item1[index].tieu_de
                                   ]);
                             },
                             child: Padding(
@@ -129,7 +128,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                           width: 90,
                                           child: Image.network(
                                             Constant.url +
-                                                value[index].hinh_anh,
+                                                value.item1[index].hinh_anh,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -140,7 +139,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                         padding: const EdgeInsets.only(
                                             left: 12, right: 30),
                                         child: Text(
-                                          value[index].tieu_de,
+                                          value.item1[index].tieu_de,
                                           style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 17,

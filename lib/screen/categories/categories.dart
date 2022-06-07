@@ -1,5 +1,4 @@
 import 'package:app_cafe/models/categories/categories.dart';
-import 'package:app_cafe/models/categories/categories_data.dart';
 import 'package:app_cafe/services/apis/cafe_api.dart';
 import 'package:app_cafe/services/contants/url.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,7 @@ class _CategoriesState extends State<Categories>
   @override
   void initState() {
     logic = context.read<CategoriesLogic>();
-    
+
     super.initState();
   }
 
@@ -68,9 +67,9 @@ class _CategoriesState extends State<Categories>
             },
           ),
           Container(
-              padding: const EdgeInsets.only(top: 35),
               width: double.infinity,
               height: MediaQuery.of(context).size.height - 250,
+              clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(
@@ -81,6 +80,7 @@ class _CategoriesState extends State<Categories>
                     topLeft: Radius.circular(35),
                   )),
               child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: 35),
                 physics: const BouncingScrollPhysics(),
                 child: Selector<CategoriesLogic, List<CategoriesData>>(
                   selector: (_, state) => state.data,

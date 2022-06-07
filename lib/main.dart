@@ -2,7 +2,6 @@ import 'package:app_cafe/auth_loading/auth_loading.dart';
 
 import 'package:app_cafe/screen/categories/categories.dart';
 import 'package:app_cafe/screen/categories_detail/categories_detail.dart';
-import 'package:app_cafe/services/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

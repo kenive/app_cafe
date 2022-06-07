@@ -5,11 +5,13 @@ part 'detail_response.g.dart';
 @JsonSerializable()
 class CategoryDetailResponse {
   bool success;
-  List<CategoryDetailData> data;
+  String? message;
+  List<CategoryDetailData>? data;
 
   CategoryDetailResponse({
+    this.message,
     required this.success,
-    required this.data,
+    this.data,
   });
 
   factory CategoryDetailResponse.fromJson(Map<String, dynamic> json) =>

@@ -4,6 +4,8 @@ import 'package:app_cafe/models/categories_detail/detail_data.dart';
 import 'package:app_cafe/models/comment/comment_admin.dart';
 
 import 'package:app_cafe/models/commentData/comment_data.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -27,12 +29,10 @@ class StudyDetail extends StatefulWidget {
 class _StudyDetailState extends State<StudyDetail>
     with AutomaticKeepAliveClientMixin {
   late StudyLogic study;
-  late ScrollController controller;
 
   @override
   void initState() {
     study = StudyLogic(context: context);
-    controller = ScrollController();
 
     super.initState();
   }
@@ -98,135 +98,159 @@ class _StudyDetailState extends State<StudyDetail>
                     }
 
                     return SingleChildScrollView(
+                      //controller: study.controller1,
                       child: Column(
                         children: [
-                          SizedBox(
-                            height: value1.item2,
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            height: study.height,
                             child: WebView(
+                              debuggingEnabled: true,
                               zoomEnabled: false,
                               javascriptMode: JavascriptMode.unrestricted,
                               onWebViewCreated:
                                   (WebViewController webViewController) async {
                                 study.controller.complete(webViewController);
                                 study.loadHtmlString(study.controller, context);
-                                //study.onPageFinished(context, study.controller);
                               },
+                              // ignore: prefer_collection_literals
+                              javascriptChannels: Set.from([
+                                JavascriptChannel(
+                                    name: "Resize",
+                                    onMessageReceived:
+                                        (JavascriptMessage message) {
+                                      study.onPageFinished(
+                                          context, study.controller);
+                                    })
+                              ]),
                             ),
                           ),
                           if (value1.item3.isEmpty) const SizedBox(),
                           if (value1.item3.isNotEmpty)
-                            Column(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 15),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Hỏi đáp, góp ý kiến',
-                                      style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                                Card(
-                                  color: Colors.green.shade100,
-                                  elevation: 2,
-                                  child: Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        color: Colors.green.shade100,
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(value1.item3[0].ho_ten,
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              Text(
-                                                DateFormat('dd-MM-yyyy  kk:mm')
-                                                    .format(DateTime.parse(
-                                                        value1.item3[0]
-                                                            .created_at)),
-                                                style: const TextStyle(
-                                                    fontStyle:
-                                                        FontStyle.italic),
-                                              )
-                                            ],
-                                          ),
-                                          Html(
-                                            data: value1.item3[0].noi_dung,
-                                            style: {
-                                              '*': Style(
-                                                  fontSize: const FontSize(17)),
-                                            },
-                                          ),
-                                        ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Column(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 15),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Hỏi đáp, góp ý kiến',
+                                        style: TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Card(
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  child: Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(value1.item3[1].ho_ten,
+                                  Card(
+                                    color: Colors.green.shade100,
+                                    elevation: 3,
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          color: Colors.green.shade100,
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 15),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(value1.item3[0].ho_ten,
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                  DateFormat(
+                                                          'dd-MM-yyyy  kk:mm')
+                                                      .format(DateTime.parse(
+                                                          value1.item3[0]
+                                                              .created_at)),
                                                   style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              Text(
-                                                DateFormat('dd-MM-yyyy  kk:mm')
-                                                    .format(DateTime.parse(
-                                                        value1.item3[1]
-                                                            .created_at)),
-                                                style: const TextStyle(
-                                                    fontStyle:
-                                                        FontStyle.italic),
-                                              )
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 15,
-                                          ),
-                                          Text(value1.item3[1].noi_dung,
-                                              textScaleFactor: 1.2,
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                                height: 1.222,
-                                              ))
-                                        ],
+                                                      fontStyle:
+                                                          FontStyle.italic),
+                                                )
+                                              ],
+                                            ),
+                                            Html(
+                                              data: value1.item3[0].noi_dung,
+                                              style: {
+                                                '*': Style(
+                                                    fontSize:
+                                                        const FontSize(17)),
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Card(
+                                    color: Colors.white,
+                                    elevation: 2,
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 15),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(value1.item3[1].ho_ten,
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                  DateFormat(
+                                                          'dd-MM-yyyy  kk:mm')
+                                                      .format(DateTime.parse(
+                                                          value1.item3[1]
+                                                              .created_at)),
+                                                  style: const TextStyle(
+                                                      fontStyle:
+                                                          FontStyle.italic),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 15,
+                                            ),
+                                            Text(value1.item3[1].noi_dung,
+                                                textScaleFactor: 1.2,
+                                                style: const TextStyle(
+                                                  fontSize: 13,
+                                                  height: 1.222,
+                                                ))
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 55,
+                                  )
+                                ],
+                              ),
                             )
                         ],
                       ),

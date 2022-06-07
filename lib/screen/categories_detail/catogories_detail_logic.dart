@@ -11,16 +11,27 @@ class CategoriesDetailLogic extends ChangeNotifier {
     });
   }
 
+  bool check = false;
+
   List<CategoryDetailData> data = [];
 
   void getIdCategories(int id) async {
     try {
       var a = await cafe.getIdCategories(id);
-      data = a.data;
+      check = false;
+
+      if (a.success) {
+        data = a.data!;
+        check = true;
+      } else {
+        print('nguyen');
+        check = false;
+      }
 
       notifyListeners();
     } catch (e) {
       data = [];
+      check = false;
       notifyListeners();
       debugPrint('$e');
     }

@@ -11,6 +11,7 @@ class StudyLogic extends ChangeNotifier {
       setId(id[0]);
     });
   }
+  late ScrollController controller1 = ScrollController();
 
   TextEditingController txtPhone = TextEditingController();
   TextEditingController txtName = TextEditingController();
@@ -24,7 +25,7 @@ class StudyLogic extends ChangeNotifier {
   String errorName = 'error';
   String errorContent = 'error';
 
-  int size = 36;
+  int size = 18;
   bool checkMucLuc = true;
 
   List<CategoryDetailData> dataCategories = [];
@@ -42,7 +43,7 @@ class StudyLogic extends ChangeNotifier {
       nguoi_dang: 1);
 
   List<String> listH2conTent = [];
-  double height = 100;
+  double height = 0;
 
   Future<void> onPageFinished(
       BuildContext context, Completer<WebViewController> _controller) async {
@@ -50,8 +51,6 @@ class StudyLogic extends ChangeNotifier {
     height = double.parse(await controller
         // ignore: deprecated_member_use
         .evaluateJavascript("document.documentElement.scrollHeight;"));
-    print(height);
-
     notifyListeners();
   }
 
@@ -73,19 +72,41 @@ class StudyLogic extends ChangeNotifier {
      <html lang="en">
      <head>
      <style>
+     p{
+       margin-left:0cm;
+       font-size: ${size}px;
+       margin-top:0cm;
+       margin-bottom:0cm;
+     }
+    
+     figure{
+       margin-top:0cm;
+       margin-bottom: 0cm;
+       margin-left: 0cm;
+       scrollbar-width: auto;
+       overflow-x: scroll;
+       scrollbar-height: auto;
+       overflow-y: scroll;
 
-body {
-  font-size: ${size}px;
-}
+     }
+     *{
+       font-size: ${size}px;
+
+     }
 </style>
    
      </head>
      <body>
      $a
     </body>
+    <script>
+  const resizeObserver = new ResizeObserver(entries =>
+  Resize.postMessage("height" + (entries[0].target.clientHeight).toString()) )
+  resizeObserver.observe(document.body)
+</script>
     </html>
     ''';
-
+  List<String> lst = [];
   void getIdStudy(int id) async {
     try {
       var data = await cafe.getIdStudy(id);
@@ -93,7 +114,7 @@ body {
       data1 = data.data!;
       var categories = await cafe.getIdCategories(data1.danh_muc_id);
 
-      dataCategories = categories.data;
+      dataCategories = categories.data!;
 
       var document = parse(data1.noi_dung);
 
@@ -102,12 +123,17 @@ body {
       document.getElementsByTagName('h2').forEach((element) {
         listH2conTent.add(element.innerHtml);
       });
+      loadHtmlString(controller, context);
+
       if (listH2conTent.isEmpty) {
         checkMucLuc = false;
       }
-
       var comment = await cafe.getComment(id);
-      dataComment = comment.data!;
+      if (comment.success) {
+        dataComment = comment.data!;
+      } else {
+        dataComment = [];
+      }
 
       notifyListeners();
     } catch (e) {
@@ -125,11 +151,12 @@ body {
       data1 = data.data!;
       var document = parse(data1.noi_dung);
       listH2conTent = [];
+      lst = [];
 
       document.getElementsByTagName('h2').forEach((element) {
         listH2conTent.add(element.innerHtml);
       });
-      size = 36;
+      size = 18;
       notifyListeners();
       loadHtmlString(controller, context);
 
@@ -139,7 +166,11 @@ body {
         checkMucLuc = true;
       }
       var comment = await cafe.getComment(id);
-      dataComment = comment.data!;
+      if (comment.success) {
+        dataComment = comment.data!;
+      } else {
+        dataComment = [];
+      }
 
       notifyListeners();
     } catch (e) {
@@ -151,19 +182,19 @@ body {
   void tang() {
     try {
       if (enable) {
-        if (size == 60) {
+        if (size == 50) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Đã đạt độ phóng to nhất'),
           ));
           enable = false;
           notifyListeners();
         } else {
-          loadHtmlString(controller, context);
           size += 1;
+          loadHtmlString(controller, context);
           notifyListeners();
         }
       }
-      if (size == 20) {
+      if (size == 10) {
         enable = true;
         size += 1;
         loadHtmlString(controller, context);
@@ -177,7 +208,7 @@ body {
   void giam() {
     try {
       if (enable) {
-        if (size == 20) {
+        if (size == 10) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Đã đạt độ thu nhỏ thấp nhất')));
           enable = false;
@@ -188,7 +219,7 @@ body {
           notifyListeners();
         }
       }
-      if (size == 60) {
+      if (size == 50) {
         enable = true;
         size -= 1;
         loadHtmlString(controller, context);
