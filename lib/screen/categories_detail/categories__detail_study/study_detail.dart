@@ -4,6 +4,7 @@ import 'package:app_cafe/models/categories_detail/detail_data.dart';
 import 'package:app_cafe/models/comment/comment_admin.dart';
 
 import 'package:app_cafe/models/commentData/comment_data.dart';
+import 'package:app_cafe/widget/drawer_detail_study.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -40,43 +41,52 @@ class _StudyDetailState extends State<StudyDetail>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    List id = ModalRoute.of(context)!.settings.arguments as List;
 
     return ChangeNotifierProvider.value(
       value: study,
       child: Scaffold(
-        drawer: const DrawerBegin(),
-        endDrawer: DrawerWidget(
-          detailData: study.dataCategories,
-        ),
+        //drawer: const DrawerBegin(),
+        // endDrawer: DrawerWidget(
+        //   detailData: study.dataCategories,
+        // ),
+        endDrawer: const DrawerTitle(),
         body: Column(
           children: [
             Container(
               padding: const EdgeInsets.only(top: 35),
-              color: const Color(0xfff09af00),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.green.shade700, Colors.green.shade500],
+                    begin: const FractionalOffset(0.0, 5.0),
+                    end: const FractionalOffset(0.5, 0.0),
+                    stops: const [0.0, 1.0],
+                    tileMode: TileMode.mirror),
+              ),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 dense: true,
                 leading: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.pop(context)),
-                title: Selector<StudyLogic, CategoryDetailData>(
-                  selector: (_, state) => state.data1,
-                  builder: (context, value, child) {
-                    if (value.tieu_de.isEmpty) {
-                      return const SizedBox();
-                    }
-                    return Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        study.data1.tieu_de,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 21,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  },
+                // title: Selector<StudyLogic, CategoryDetailData>(
+                //   selector: (_, state) => state.data1,
+                //   builder: (context, value, child) {
+                //     if (value.tieu_de.isEmpty) {
+                //       return const SizedBox();
+                //     }
+                //     return
+                title: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    id[1],
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 21,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
+
                 trailing: Builder(builder: (context) {
                   return IconButton(
                       icon:
@@ -88,214 +98,28 @@ class _StudyDetailState extends State<StudyDetail>
             Flexible(
               child: Stack(children: [
                 Selector<StudyLogic,
-                    Tuple3<CategoryDetailData, double, List<CommentAdmin>>>(
+                    Tuple2<CategoryDetailData, List<CommentAdmin>>>(
                   selector: (_, state) =>
-                      Tuple3(state.data1, state.height, state.dataComment),
+                      Tuple2(state.data1, state.dataComment),
                   builder: (context, value1, child) {
                     if (value1.item1.noi_dung.isEmpty) {
                       return const Center(
                           child: FooterLoading(isLoading: true));
                     }
 
-                    return SingleChildScrollView(
-                      //controller: study.controller1,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            height: study.height,
-                            child: WebView(
-                              debuggingEnabled: true,
-                              zoomEnabled: false,
-                              javascriptMode: JavascriptMode.unrestricted,
-                              onWebViewCreated:
-                                  (WebViewController webViewController) async {
-                                study.controller.complete(webViewController);
-                                study.loadHtmlString(study.controller, context);
-                              },
-                              // ignore: prefer_collection_literals
-                              javascriptChannels: Set.from([
-                                JavascriptChannel(
-                                    name: "Resize",
-                                    onMessageReceived:
-                                        (JavascriptMessage message) {
-                                      study.onPageFinished(
-                                          context, study.controller);
-                                    })
-                              ]),
-                            ),
-                          ),
-                          if (value1.item3.isEmpty) const SizedBox(),
-                          if (value1.item3.isNotEmpty)
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Column(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        'Hỏi đáp, góp ý kiến',
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                  Card(
-                                    color: Colors.green.shade100,
-                                    elevation: 3,
-                                    child: Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                          color: Colors.green.shade100,
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 15),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(value1.item3[0].ho_ten,
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Text(
-                                                  DateFormat(
-                                                          'dd-MM-yyyy  kk:mm')
-                                                      .format(DateTime.parse(
-                                                          value1.item3[0]
-                                                              .created_at)),
-                                                  style: const TextStyle(
-                                                      fontStyle:
-                                                          FontStyle.italic),
-                                                )
-                                              ],
-                                            ),
-                                            Html(
-                                              data: value1.item3[0].noi_dung,
-                                              style: {
-                                                '*': Style(
-                                                    fontSize:
-                                                        const FontSize(17)),
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Card(
-                                    color: Colors.white,
-                                    elevation: 2,
-                                    child: Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 15),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(value1.item3[1].ho_ten,
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Text(
-                                                  DateFormat(
-                                                          'dd-MM-yyyy  kk:mm')
-                                                      .format(DateTime.parse(
-                                                          value1.item3[1]
-                                                              .created_at)),
-                                                  style: const TextStyle(
-                                                      fontStyle:
-                                                          FontStyle.italic),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 15,
-                                            ),
-                                            Text(value1.item3[1].noi_dung,
-                                                textScaleFactor: 1.2,
-                                                style: const TextStyle(
-                                                  fontSize: 13,
-                                                  height: 1.222,
-                                                ))
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 55,
-                                  )
-                                ],
-                              ),
-                            )
-                        ],
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: WebView(
+                        debuggingEnabled: true,
+                        zoomEnabled: false,
+                        javascriptMode: JavascriptMode.unrestricted,
+                        onWebViewCreated:
+                            (WebViewController webViewController) async {
+                          study.controller.complete(webViewController);
+                          study.loadHtmlString(study.controller, context);
+                        },
                       ),
                     );
-
-                    /* SingleChildScrollView(
-                            controller: controller,
-                            physics: const BouncingScrollPhysics(),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Selector<StudyLogic, double>(
-                                  builder: (context, value, child) {
-                                    return Html(
-                                      shrinkWrap: true,
-                                      data: value1.noi_dung,
-                                      style: {
-                                        '*': Style(fontSize: FontSize(value)),
-                                        'figure': Style(
-                                            margin: EdgeInsets.zero,
-                                            padding: EdgeInsets.zero),
-                                      },
-                                      customRender: {
-                                        "figure": (context, child) {
-                                          return const SingleChildScrollView(
-                                            scrollDirection: Axis.vertical,
-                                          );
-                                        },
-                                      },
-                                    );
-                                  },
-                                  selector: (_, state) => state.size,
-                                ),
-                                const Divider(
-                                  height: 5,
-                                  thickness: 0.5,
-                                  color: Colors.grey,
-                                ),
-                                ,
-                                const SizedBox(
-                                  height: 70,
-                                )
-                              ],
-                            )) */
-                    ;
                   },
                 ),
                 Positioned(
@@ -340,10 +164,209 @@ class _StudyDetailState extends State<StudyDetail>
                     if (value) {
                       return ElevatedButton(
                         onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                          //controller.jumpTo(1000);
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ChangeNotifierProvider.value(
+                                  value: study,
+                                  builder: (_, value) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: AlertDialog(
+                                        insetPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        backgroundColor: Colors.white,
+                                        content:
+                                            Selector<StudyLogic,
+                                                    List<CommentAdmin>>(
+                                                selector: (p0, p1) =>
+                                                    p1.dataComment,
+                                                builder:
+                                                    (context, value1, child) {
+                                                  return SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    height: 500,
+                                                    child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 10),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              const Align(
+                                                                alignment: Alignment
+                                                                    .centerLeft,
+                                                                child: Text(
+                                                                  'Hỏi đáp, góp ý kiến',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          25,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                              ),
+                                                              Align(
+                                                                alignment: Alignment
+                                                                    .centerRight,
+                                                                child:
+                                                                    IconButton(
+                                                                  icon: const Icon(
+                                                                      Icons
+                                                                          .close,
+                                                                      color: Colors
+                                                                          .black),
+                                                                  onPressed: () =>
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Scrollbar(
+                                                            child: ListView(
+                                                              shrinkWrap: true,
+                                                              children: [
+                                                                Card(
+                                                                  color: Colors
+                                                                      .green
+                                                                      .shade100,
+                                                                  elevation: 3,
+                                                                  child:
+                                                                      Container(
+                                                                    width: double
+                                                                        .infinity,
+                                                                    decoration: BoxDecoration(
+                                                                        color: Colors
+                                                                            .green
+                                                                            .shade100,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(8)),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                          horizontal:
+                                                                              15,
+                                                                          vertical:
+                                                                              15),
+                                                                      child:
+                                                                          Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(value1[0].ho_ten, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                                              Text(
+                                                                                DateFormat('dd-MM-yyyy  kk:mm').format(DateTime.parse(value1[0].created_at)),
+                                                                                style: const TextStyle(fontStyle: FontStyle.italic),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                          Html(
+                                                                            data:
+                                                                                value1[0].noi_dung,
+                                                                            style: {
+                                                                              '*': Style(fontSize: const FontSize(17)),
+                                                                            },
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 20,
+                                                                ),
+                                                                Card(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  elevation: 2,
+                                                                  child:
+                                                                      Container(
+                                                                    width: double
+                                                                        .infinity,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              8),
+                                                                    ),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                          horizontal:
+                                                                              15,
+                                                                          vertical:
+                                                                              15),
+                                                                      child:
+                                                                          Column(
+                                                                        children: [
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(value1[1].ho_ten, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                                              Text(
+                                                                                DateFormat('dd-MM-yyyy  kk:mm').format(DateTime.parse(value1[1].created_at)),
+                                                                                style: const TextStyle(fontStyle: FontStyle.italic),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            height:
+                                                                                15,
+                                                                          ),
+                                                                          Text(
+                                                                              value1[1].noi_dung,
+                                                                              textScaleFactor: 1.2,
+                                                                              style: const TextStyle(
+                                                                                fontSize: 13,
+                                                                                height: 1.222,
+                                                                              ))
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }),
+                                      ),
+                                    );
+                                  },
+                                );
+                              });
                         },
-                        child: const Text('Mục lục'),
+                        child: const Text('Xem bình luận'),
                         style: ElevatedButton.styleFrom(
                           primary: const Color.fromARGB(255, 4, 63, 111),
                         ),

@@ -25,7 +25,7 @@ class StudyLogic extends ChangeNotifier {
   String errorName = 'error';
   String errorContent = 'error';
 
-  int size = 18;
+  int size = 30;
   bool checkMucLuc = true;
 
   List<CategoryDetailData> dataCategories = [];
@@ -43,16 +43,16 @@ class StudyLogic extends ChangeNotifier {
       nguoi_dang: 1);
 
   List<String> listH2conTent = [];
-  double height = 0;
 
-  Future<void> onPageFinished(
-      BuildContext context, Completer<WebViewController> _controller) async {
-    WebViewController controller = await _controller.future;
-    height = double.parse(await controller
-        // ignore: deprecated_member_use
-        .evaluateJavascript("document.documentElement.scrollHeight;"));
-    notifyListeners();
-  }
+  List<String> tieuDe = [
+    'Tiêu đề 1',
+    'Tiêu đề 2',
+    'Tiêu đề 3',
+    'Tiêu đề 4',
+    'Tiêu đề 5',
+    'Tiêu đề 6',
+    'Tiêu đề 7',
+  ];
 
   Future<void> loadHtmlString(
       Completer<WebViewController> controller1, BuildContext context) async {
@@ -99,11 +99,7 @@ class StudyLogic extends ChangeNotifier {
      <body>
      $a
     </body>
-    <script>
-  const resizeObserver = new ResizeObserver(entries =>
-  Resize.postMessage("height" + (entries[0].target.clientHeight).toString()) )
-  resizeObserver.observe(document.body)
-</script>
+  
     </html>
     ''';
   List<String> lst = [];
@@ -116,23 +112,12 @@ class StudyLogic extends ChangeNotifier {
 
       dataCategories = categories.data!;
 
-      var document = parse(data1.noi_dung);
-
-      //onPageFinished(context, controller);
-
-      document.getElementsByTagName('h2').forEach((element) {
-        listH2conTent.add(element.innerHtml);
-      });
-      loadHtmlString(controller, context);
-
-      if (listH2conTent.isEmpty) {
-        checkMucLuc = false;
-      }
       var comment = await cafe.getComment(id);
       if (comment.success) {
         dataComment = comment.data!;
       } else {
         dataComment = [];
+        checkMucLuc = false;
       }
 
       notifyListeners();
@@ -149,13 +134,9 @@ class StudyLogic extends ChangeNotifier {
       var data = await cafe.getIdStudy(id);
       stt = id;
       data1 = data.data!;
-      var document = parse(data1.noi_dung);
       listH2conTent = [];
       lst = [];
 
-      document.getElementsByTagName('h2').forEach((element) {
-        listH2conTent.add(element.innerHtml);
-      });
       size = 18;
       notifyListeners();
       loadHtmlString(controller, context);

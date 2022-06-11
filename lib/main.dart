@@ -2,6 +2,7 @@ import 'package:app_cafe/auth_loading/auth_loading.dart';
 
 import 'package:app_cafe/screen/categories/categories.dart';
 import 'package:app_cafe/screen/categories_detail/categories_detail.dart';
+import 'package:app_cafe/screen/categories_detail/categories_title/categories_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,7 @@ class _MyAppState extends State<MyApp> {
           '/': (context) => const AuthLoading(),
           'catagories': (context) => const Categories(),
           'catagories_detail': (context) => const CategoriesDetail(),
+          'catagories_title': (context) => const CategoriesTitle(),
           'study_detail': (context) => const StudyDetail(),
         },
       ),
