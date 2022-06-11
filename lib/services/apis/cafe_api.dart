@@ -4,6 +4,7 @@ import 'package:app_cafe/models/cauhinh/cau_hinh.dart';
 import 'package:app_cafe/models/comment/comment_response.dart';
 import 'package:app_cafe/models/commentData/comment_data.dart';
 import 'package:app_cafe/models/study_detail/study_detail.dart';
+import 'package:app_cafe/models/title_detail/title_detail.dart';
 import 'package:app_cafe/models/user/user.dart';
 import 'package:app_cafe/services/client_api.dart';
 import 'package:retrofit/retrofit.dart';
@@ -54,5 +55,10 @@ abstract class CafeService {
     @Part(name: 'email') String email,
     @Part(name: 'dien_thoai') String dien_thoai,
     @Part(name: 'ho_ten') String ho_ten,
+  );
+
+  @GET('bai-hoc-v2/{id-bai-hoc}')
+  Future<TitleDetail> getStudyTitle(
+    @Path('id-bai-hoc') int id,
   );
 }

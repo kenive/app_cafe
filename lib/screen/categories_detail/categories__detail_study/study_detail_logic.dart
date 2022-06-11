@@ -4,6 +4,7 @@ class StudyLogic extends ChangeNotifier {
   late BuildContext context;
   final CafeService cafe = CafeService.client();
   int id = 0;
+
   StudyLogic({required this.context}) {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       List id = ModalRoute.of(context)!.settings.arguments as List;
@@ -56,10 +57,11 @@ class StudyLogic extends ChangeNotifier {
 
   Future<void> loadHtmlString(
       Completer<WebViewController> controller1, BuildContext context) async {
+    List id = ModalRoute.of(context)!.settings.arguments as List;
     WebViewController controller = await controller1.future;
 
     try {
-      await controller.loadHtmlString(content(data1.noi_dung, size));
+      await controller.loadHtmlString(content(id[1].toString(), size));
 
       notifyListeners();
     } catch (e) {

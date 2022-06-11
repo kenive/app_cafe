@@ -28,17 +28,8 @@ class CategoriesTitleLogic extends ChangeNotifier {
       noi_dung: '',
       nguoi_dang: 1);
 
-  List<String> listH2conTent = [];
+  List<ContentDetail> content = [];
 
-  List<String> tieuDe = [
-    'Tiêu đề 1',
-    'Tiêu đề 2',
-    'Tiêu đề 3',
-    'Tiêu đề 4',
-    'Tiêu đề 5',
-    'Tiêu đề 6',
-    'Tiêu đề 7',
-  ];
   void getIdStudy(int id) async {
     try {
       var data = await cafe.getIdStudy(id);
@@ -48,6 +39,9 @@ class CategoriesTitleLogic extends ChangeNotifier {
       var categories = await cafe.getIdCategories(data1.danh_muc_id);
 
       dataCategories = categories.data!;
+      var title = await cafe.getStudyTitle(id);
+
+      content = title.data.noiDung!.detail;
 
       notifyListeners();
     } catch (e) {
@@ -65,6 +59,10 @@ class CategoriesTitleLogic extends ChangeNotifier {
       data1 = data.data!;
 
       var comment = await cafe.getComment(id);
+
+      var title = await cafe.getStudyTitle(id);
+
+      content = title.data.noiDung!.detail;
       if (comment.success) {
         dataComment = comment.data!;
       } else {

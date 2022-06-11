@@ -78,13 +78,12 @@ class _StudyDetailState extends State<StudyDetail>
                 //     return
                 title: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    id[1],
-                    style: const TextStyle(
+                  child: Html(data: id[2], style: {
+                    '*': Style(
                         color: Colors.white,
-                        fontSize: 21,
-                        fontWeight: FontWeight.bold),
-                  ),
+                        fontSize: const FontSize(21),
+                        fontWeight: FontWeight.bold)
+                  }),
                 ),
 
                 trailing: Builder(builder: (context) {

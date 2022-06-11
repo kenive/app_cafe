@@ -1,5 +1,6 @@
 import 'package:app_cafe/models/categories_detail/detail_data.dart';
 import 'package:app_cafe/models/comment/comment_admin.dart';
+import 'package:app_cafe/models/title_detail/title_detail.dart';
 import 'package:app_cafe/services/apis/cafe_api.dart';
 import 'package:app_cafe/widget/drawer_widget.dart';
 import 'package:app_cafe/widget/footer_loading/footer_loading.dart';
@@ -99,21 +100,26 @@ class _CategoriesTitleState extends State<CategoriesTitle> {
                 child: MediaQuery.removePadding(
                     context: context,
                     removeTop: true,
-                    child: Selector<CategoriesTitleLogic,
-                        List<CategoryDetailData>>(
-                      selector: (p0, p1) => p1.dataCategories,
+                    child: Selector<CategoriesTitleLogic, List<ContentDetail>>(
+                      selector: (p0, p1) => p1.content,
                       builder: (context, value, child) {
                         return ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: title.tieuDe.length,
+                          itemCount: value.length,
                           itemBuilder: (context, index) {
+                            if (value.isEmpty) {
+                              return const FooterLoading(
+                                isLoading: true,
+                              );
+                            }
                             return InkWell(
                               onTap: () {
                                 Navigator.pushNamed(context, 'study_detail',
                                     arguments: [
-                                      value[index].id,
-                                      title.tieuDe[index]
+                                      title.data1.id,
+                                      value[index].noiDung,
+                                      value[index].deMuc
                                     ]);
                               },
                               child: Padding(
@@ -127,13 +133,23 @@ class _CategoriesTitleState extends State<CategoriesTitle> {
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
-                                    child: Text(title.tieuDe[index],
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.blue,
+                                    child: Html(
+                                      data: value[index].deMuc,
+                                      style: {
+                                        '*': Style(
+                                          fontSize: const FontSize(20),
                                           fontWeight: FontWeight.w700,
-                                        )),
+                                          color: Colors.blue,
+                                        ),
+                                      },
+                                    ),
+                                    // child: Text(value[index].deMuc,
+                                    //     textAlign: TextAlign.center,
+                                    //     style: const TextStyle(
+                                    //       fontSize: 20,
+                                    //       color: Colors.blue,
+                                    //       fontWeight: FontWeight.w700,
+                                    //     )),
                                   ),
                                 ),
                               ),
